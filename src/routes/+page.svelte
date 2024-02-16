@@ -2,6 +2,7 @@
 
 	import { onMount } from "svelte";
 
+	let mode = "classic";
 	let state = "start";
 	let subState;
 	let score;
@@ -133,130 +134,316 @@
 		return arr[Math.floor(Math.random() * arr.length)];
 	};
 
+	const range = (start, end) => {
+		return Array(end - start + 1).fill().map((_, idx) => start + idx);
+	};
+
+	const randomQuestion = () => {
+		// @ts-ignore
+		return ({
+			classic() {
+				if (score < 1) {
+					// ADD LEVEL 1
+					let firstNumber = randint(10, 50);
+					let secondNumber = randint(10, Math.min(50, 99 - firstNumber));
+					let firstNumberString = zeroPad(firstNumber, 2);
+					let secondNumberString = zeroPad(secondNumber, 2);
+					question = `${firstNumberString} + ${secondNumberString}`;
+					let correctAnswer = firstNumber + secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 2) {
+					// SUB LEVEL 1
+					let firstNumber = randint(20, 99);
+					let secondNumber = randint(10, firstNumber);
+					let firstNumberString = zeroPad(firstNumber, 2);
+					let secondNumberString = zeroPad(secondNumber, 2);
+					question = `${firstNumberString} - ${secondNumberString}`;
+					let correctAnswer = firstNumber - secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 3) {
+					// ADD LEVEL 2
+					let firstNumber = randint(10, 99);
+					let secondNumber = randint(Math.max(10, 100 - firstNumber), 99);
+					let firstNumberString = zeroPad(firstNumber, 2);
+					let secondNumberString = zeroPad(secondNumber, 2);
+					question = `${firstNumberString} + ${secondNumberString}`;
+					let correctAnswer = firstNumber + secondNumber;
+					return zeroPad(correctAnswer, 3);
+				} else if (score < 4) {
+					// SUB LEVEL 2
+					let firstNumber = randint(20, 198);
+					let secondNumber = randint(10, firstNumber);
+					let firstNumberString = zeroPad(firstNumber, 3);
+					let secondNumberString = zeroPad(secondNumber, 3);
+					question = `${firstNumberString} - ${secondNumberString}`;
+					let correctAnswer = firstNumber - secondNumber;
+					return zeroPad(correctAnswer, 3);
+				} else if (score < 5) {
+					// MULT LEVEL 1
+					let firstNumber = randint(1, 14);
+					let secondNumber = randint(1, 14);
+					let firstNumberString = zeroPad(firstNumber, 2);
+					let secondNumberString = zeroPad(secondNumber, 2);
+					question = `${firstNumberString} * ${secondNumberString}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 3);
+				} else if (score < 6) {
+					// MULT LEVEL 2
+					let firstNumber = randint(4, 31);
+					let secondNumber = randint(4, 31);
+					let firstNumberString = zeroPad(firstNumber, 2);
+					let secondNumberString = zeroPad(secondNumber, 2);
+					question = `${firstNumberString} * ${secondNumberString}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 3);
+				} else if (score < 7) {
+					// RANDOM BASES QUESTION
+					let choice = randArray(["dec-to-bin", "dec-to-hex", "bin-to-dec", "hex-to-dec", "bin-to-hex", "hex-to-bin"]);
+
+					if (choice === "dec-to-bin") {
+						let number = randint(0, 15);
+						question = `Convert ${number} to binary`;
+						let correctAnswer = number.toString(2);
+						return zeroPad(correctAnswer, 4);
+					} else if (choice === "dec-to-hex") {
+						let number = randint(0, 255);
+						question = `Convert ${number} to hex`;
+						let correctAnswer = number.toString(16).toUpperCase();
+						return zeroPad(correctAnswer, 2);
+					} else if (choice === "bin-to-dec") {
+						let number = randint(0, 63);
+						let numberBin = zeroPad(number.toString(2), 6);
+						question = `Convert ${numberBin} to decimal`;
+						return zeroPad(number, 3);
+					} else if (choice === "hex-to-dec") {
+						let number = randint(0, 255);
+						let numberHex = zeroPad(number.toString(16), 2).toUpperCase();
+						question = `Convert hex ${numberHex} to decimal`;
+						return zeroPad(number, 3);
+					} else if (choice === "bin-to-hex") {
+						let number = randint(0, 255);
+						let numberBin = zeroPad(number.toString(2), 8).toUpperCase();
+						let numberHex = zeroPad(number.toString(16), 2).toUpperCase();
+						question = `Convert ${numberBin} to hex`;
+						return numberHex;
+					} else if (choice === "hex-to-bin") {
+						let number = randint(0, 15);
+						let numberHex = zeroPad(number.toString(16), 1).toUpperCase();
+						let numberBin = zeroPad(number.toString(2), 4).toUpperCase();
+						question = `Convert hex ${numberHex} to binary`;
+						return numberBin;
+					}
+				} else if (score < 8) {
+					// MULT LEVEL 3
+					let firstNumber = randint(10, 50);
+					let secondNumber = randint(10, 50);
+					let firstNumberString = zeroPad(firstNumber, 2);
+					let secondNumberString = zeroPad(secondNumber, 2);
+					question = `${firstNumberString} * ${secondNumberString}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 4);
+				} else if (score < 9) {
+					// MULT LEVEL 4
+					let firstNumber = randint(10, 70);
+					let secondNumber = randint(10, 70);
+					let firstNumberString = zeroPad(firstNumber, 2);
+					let secondNumberString = zeroPad(secondNumber, 2);
+					question = `${firstNumberString} * ${secondNumberString}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 4);
+				} else {
+					// MULT LEVEL 5
+					let firstNumber = randint(10, 99);
+					let secondNumber = randint(10, 99);
+					let firstNumberString = zeroPad(firstNumber, 2);
+					let secondNumberString = zeroPad(secondNumber, 2);
+					question = `${firstNumberString} * ${secondNumberString}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 4);
+				}
+			},
+			tables_12() {
+				let firstNumber = randint(1, 12);
+				let secondNumber = randint(1, 12);
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			tables_16() {
+				let firstNumber = randint(2, 16);
+				let secondNumber = randint(2, 16);
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			tables_20() {
+				let firstNumber = randint(2, 20);
+				let secondNumber = randint(2, 20);
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			tables_24() {
+				let firstNumber = randint(2, 24);
+				let secondNumber = randint(2, 24);
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			tables_28() {
+				let firstNumber = randint(2, 28);
+				let secondNumber = randint(2, 28);
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			tables_32() {
+				let firstNumber = randint(2, 32);
+				let secondNumber = randint(2, 32);
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			multiplication_easy() {
+				let firstNumber = randint(10, Math.min(13 + score, 31));
+				let secondNumber = randint(2, Math.min(13 + score, 31));
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			multiplication_hard() {
+				if (score < 2) {
+					let firstNumber = randint(1, 18);
+					let secondNumber = randint(1, 18);
+					question = `${firstNumber} * ${secondNumber}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 4) {
+					let firstNumber = randint(1, 24);
+					let secondNumber = randint(1, 24);
+					question = `${firstNumber} * ${secondNumber}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 6) {
+					let firstNumber = randint(10, 31);
+					let secondNumber = randint(2, 31);
+					question = `${firstNumber} * ${secondNumber}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 7) {
+					let firstNumber = randArray([...range(10, 31), 35, 40, 45, 50]);
+					let secondNumber = randArray([...range(2, 31), 35, 40, 45, 50]);
+					question = `${firstNumber} * ${secondNumber}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 8) {
+					let firstNumber = randArray([...range(10, 31), 35, 40, 45, 50, 55, 60, 65, 70]);
+					let secondNumber = randArray([...range(2, 31), 35, 40, 45, 50, 55, 60, 65, 70]);
+					question = `${firstNumber} * ${secondNumber}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 9) {
+					let firstNumber = randArray([...range(10, 31), 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95]);
+					let secondNumber = randArray([...range(2, 31), 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95]);
+					question = `${firstNumber} * ${secondNumber}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 10) {
+					let firstNumber = randArray([...range(10, 31), 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95]);
+					let secondNumber = randArray([...range(2, 31), 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95]);
+					question = `${firstNumber} * ${secondNumber}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 11) {
+					let firstNumber = randArray([...range(10, 50), 55, 60, 65, 70, 75, 80, 85, 90, 95]);
+					let secondNumber = randArray([...range(2, 50), 55, 60, 65, 70, 75, 80, 85, 90, 95]);
+					question = `${firstNumber} * ${secondNumber}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 12) {
+					let firstNumber = randArray([...range(10, 70), 70, 75, 80, 85, 90, 95]);
+					let secondNumber = randArray([...range(2, 70), 70, 75, 80, 85, 90, 95]);
+					question = `${firstNumber} * ${secondNumber}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 2);
+				} else if (score < 13) {
+					let firstNumber = randint(10, 99);
+					let secondNumber = randint(2, 99);
+					question = `${firstNumber} * ${secondNumber}`;
+					let correctAnswer = firstNumber * secondNumber;
+					return zeroPad(correctAnswer, 2);
+				}
+			},
+			mult_easy() {
+				let x;
+				if (score < 8) {
+					x = 6;
+				} else if (score < 16) {
+					x = 12;
+				} else {
+					x = 24;
+				}
+				let firstNumber = randint(1, x) * 4;
+				let secondNumber = randint(1, x) * 4;
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			mult_med() {
+				let firstNumber, secondNumber;
+				if (score < 6) {
+					firstNumber = randint(1, 12) * 2;
+					secondNumber = randint(1, 12) * 2;
+				} else if (score < 12) {
+					firstNumber = randint(1, 24) * 2;
+					secondNumber = randint(1, 24) * 2;
+				} else {
+					firstNumber = randint(1, 49) * 2;
+					secondNumber = randint(1, 49) * 2;
+				}
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			mult_hard() {
+				let firstNumber, secondNumber;
+				if (score < 4) {
+					firstNumber = randint(1, 24);
+					secondNumber = randint(1, 24);
+				} else if (score < 8) {
+					firstNumber = randint(1, 49);
+					secondNumber = randint(1, 49);
+				} else {
+					firstNumber = randint(1, 99);
+					secondNumber = randint(1, 99);
+				}
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			near_squares_easy() {
+				let spread = Math.floor(score / 4);
+				let firstNumber = randint(1, 32);
+				let secondNumber = firstNumber - randint(0, spread);
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+			near_squares_hard() {
+				let spread = Math.floor(score / 4);
+				let firstNumber = randint(1, 99);
+				let secondNumber = firstNumber - randint(0, spread);
+				question = `${firstNumber} * ${secondNumber}`;
+				let correctAnswer = firstNumber * secondNumber;
+				return zeroPad(correctAnswer, 2);
+			},
+		})[mode]();
+	};
+
 	const loadNextQuestion = () => {
 		subState = "question";
 
-		let correctAnswerString;
-
-		if (score < 1) {
-			// ADD LEVEL 1
-			let firstNumber = randint(10, 50);
-			let secondNumber = randint(10, Math.min(50, 99 - firstNumber));
-			let firstNumberString = zeroPad(firstNumber, 2);
-			let secondNumberString = zeroPad(secondNumber, 2);
-			question = `${firstNumberString} + ${secondNumberString}`;
-			let correctAnswer = firstNumber + secondNumber;
-			correctAnswerString = zeroPad(correctAnswer, 2);
-		} else if (score < 2) {
-			// SUB LEVEL 1
-			let firstNumber = randint(20, 99);
-			let secondNumber = randint(10, firstNumber);
-			let firstNumberString = zeroPad(firstNumber, 2);
-			let secondNumberString = zeroPad(secondNumber, 2);
-			question = `${firstNumberString} - ${secondNumberString}`;
-			let correctAnswer = firstNumber - secondNumber;
-			correctAnswerString = zeroPad(correctAnswer, 2);
-		} else if (score < 3) {
-			// ADD LEVEL 2
-			let firstNumber = randint(10, 99);
-			let secondNumber = randint(Math.max(10, 100 - firstNumber), 99);
-			let firstNumberString = zeroPad(firstNumber, 2);
-			let secondNumberString = zeroPad(secondNumber, 2);
-			question = `${firstNumberString} + ${secondNumberString}`;
-			let correctAnswer = firstNumber + secondNumber;
-			correctAnswerString = zeroPad(correctAnswer, 3);
-		} else if (score < 4) {
-			// SUB LEVEL 2
-			let firstNumber = randint(20, 198);
-			let secondNumber = randint(10, firstNumber);
-			let firstNumberString = zeroPad(firstNumber, 3);
-			let secondNumberString = zeroPad(secondNumber, 3);
-			question = `${firstNumberString} - ${secondNumberString}`;
-			let correctAnswer = firstNumber - secondNumber;
-			correctAnswerString = zeroPad(correctAnswer, 3);
-		} else if (score < 5) {
-			// MULT LEVEL 1
-			let firstNumber = randint(1, 14);
-			let secondNumber = randint(1, 14);
-			let firstNumberString = zeroPad(firstNumber, 2);
-			let secondNumberString = zeroPad(secondNumber, 2);
-			question = `${firstNumberString} * ${secondNumberString}`;
-			let correctAnswer = firstNumber * secondNumber;
-			correctAnswerString = zeroPad(correctAnswer, 3);
-		} else if (score < 6) {
-			// MULT LEVEL 2
-			let firstNumber = randint(4, 31);
-			let secondNumber = randint(4, 31);
-			let firstNumberString = zeroPad(firstNumber, 2);
-			let secondNumberString = zeroPad(secondNumber, 2);
-			question = `${firstNumberString} * ${secondNumberString}`;
-			let correctAnswer = firstNumber * secondNumber;
-			correctAnswerString = zeroPad(correctAnswer, 3);
-		} else if (score < 7) {
-			// RANDOM BASES QUESTION
-			let choice = randArray(["dec-to-bin", "dec-to-hex", "bin-to-dec", "hex-to-dec", "bin-to-hex", "hex-to-bin"]);
-
-			if (choice === "dec-to-bin") {
-				let number = randint(0, 15);
-				question = `Convert ${number} to binary`;
-				let correctAnswer = number.toString(2);
-				correctAnswerString = zeroPad(correctAnswer, 4);
-			} else if (choice === "dec-to-hex") {
-				let number = randint(0, 255);
-				question = `Convert ${number} to hex`;
-				let correctAnswer = number.toString(16).toUpperCase();
-				correctAnswerString = zeroPad(correctAnswer, 2);
-			} else if (choice === "bin-to-dec") {
-				let number = randint(0, 63);
-				let numberBin = zeroPad(number.toString(2), 6);
-				question = `Convert ${numberBin} to decimal`;
-				correctAnswerString = zeroPad(number, 3);
-			} else if (choice === "hex-to-dec") {
-				let number = randint(0, 255);
-				let numberHex = zeroPad(number.toString(16), 2).toUpperCase();
-				question = `Convert hex ${numberHex} to decimal`;
-				correctAnswerString = zeroPad(number, 3);
-			} else if (choice === "bin-to-hex") {
-				let number = randint(0, 255);
-				let numberBin = zeroPad(number.toString(2), 8).toUpperCase();
-				let numberHex = zeroPad(number.toString(16), 2).toUpperCase();
-				question = `Convert ${numberBin} to hex`;
-				correctAnswerString = numberHex;
-			} else if (choice === "hex-to-bin") {
-				let number = randint(0, 15);
-				let numberHex = zeroPad(number.toString(16), 1).toUpperCase();
-				let numberBin = zeroPad(number.toString(2), 4).toUpperCase();
-				question = `Convert hex ${numberHex} to binary`;
-				correctAnswerString = numberBin;
-			}
-		} else if (score < 8) {
-			// MULT LEVEL 3
-			let firstNumber = randint(10, 50);
-			let secondNumber = randint(10, 50);
-			let firstNumberString = zeroPad(firstNumber, 2);
-			let secondNumberString = zeroPad(secondNumber, 2);
-			question = `${firstNumberString} * ${secondNumberString}`;
-			let correctAnswer = firstNumber * secondNumber;
-			correctAnswerString = zeroPad(correctAnswer, 4);
-		} else if (score < 9) {
-			// MULT LEVEL 4
-			let firstNumber = randint(10, 70);
-			let secondNumber = randint(10, 70);
-			let firstNumberString = zeroPad(firstNumber, 2);
-			let secondNumberString = zeroPad(secondNumber, 2);
-			question = `${firstNumberString} * ${secondNumberString}`;
-			let correctAnswer = firstNumber * secondNumber;
-			correctAnswerString = zeroPad(correctAnswer, 4);
-		} else {
-			// MULT LEVEL 5
-			let firstNumber = randint(10, 99);
-			let secondNumber = randint(10, 99);
-			let firstNumberString = zeroPad(firstNumber, 2);
-			let secondNumberString = zeroPad(secondNumber, 2);
-			question = `${firstNumberString} * ${secondNumberString}`;
-			let correctAnswer = firstNumber * secondNumber;
-			correctAnswerString = zeroPad(correctAnswer, 4);
-		}
+		let correctAnswerString = randomQuestion();
 
 		let answerCombinations = uniqueStringCombinations(correctAnswerString);
 
@@ -395,6 +582,23 @@
 	<div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
 		<h3 style="font-weight: 600;" class="title"> 30 Second Number Smash </h3>
 		<h4 style="font-weight: 400; padding-top: 0.25rem; color: #555;"> Tip: use arrow keys on a keyboard </h4>
+		<div style="margin-top: 0.25rem;">
+			<span style="font-size: 0.75rem; font-weight: 600;">Mode:</span>
+			<select bind:value={mode}>
+				<option value="classic">Classic</option>
+				<option value="tables_12">Tables (12)</option>
+				<option value="tables_16">Tables (16)</option>
+				<option value="tables_20">Tables (20)</option>
+				<option value="tables_24">Tables (24)</option>
+				<option value="tables_28">Tables (28)</option>
+				<option value="tables_32">Tables (32)</option>
+				<option value="mult_easy">Mult (Easy)</option>
+				<option value="mult_med">Mult (Medium)</option>
+				<option value="mult_hard">Mult (Hard)</option>
+				<option value="near_squares_easy">Near Squares (Easy)</option>
+				<option value="near_squares_hard">Near Squares (Hard)</option>
+			</select>
+		</div>
 	</div>
 	<!-- svelte-ignore a11y-click-events-have-key-events -->
 	<div class="main" class:green={isGreen} class:red={isRed}
@@ -494,7 +698,7 @@
 </div>
 
 <div class="footer">
-	<p>30 Second Number Smash <small><i>by David P. Callanan</i></small> <span style="width: 0.25rem; display: inline-block;"></span> <span class="version">(version 0.1.0)</span></p>
+	<p>30 Second Number Smash <small><i>by David P. Callanan</i></small> <span style="width: 0.25rem; display: inline-block;"></span> <span class="version">(version 0.1.1)</span></p>
 	<a href="https://github.com/davidcallanan/30-second-number-smash" target="_blank"><div class="vog">
 		View on GitHub
 	</div></a>
